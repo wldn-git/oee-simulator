@@ -1,0 +1,39 @@
+{
+  "name": "oee-simulator",
+  "version": "1.2.0",
+  "description": "OEE Dashboard & Simulator by SMARTEK",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win nsis"
+  },
+  "author": "#WLDN",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.smartek.oeesimulator",
+    "productName": "OEE Simulator PRO + Calc",
+    "compression": "maximum",
+    "files": [
+      "main.js",
+      "index.html",
+      "simulator.html",
+      "mockup_preview.html",
+      "validator.html",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "OEE Simulator PRO + Calc"
+    }
+  }
+}

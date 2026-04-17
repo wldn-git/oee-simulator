@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OEE Time-Lapse Engine & Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+</head>
+<body class="bg-slate-900 text-slate-200 p-6 font-[Inter]">
+
+<div class="max-w-2xl mx-auto space-y-4">
+    
+    <header class="flex justify-between items-start border-b border-slate-700 pb-4 mb-6 mt-2">
+        <div class="flex-shrink-0">
+            <h1 class="text-xl font-black text-slate-100 tracking-tight flex items-center gap-2">
+                OEE SIMULATOR 
+                <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">PRO</span>
+            </h1>
+            <p class="text-[10px] text-slate-400 font-mono mt-1">v1.0.0 Control Engine</p>
+        </div>
+        <div class="text-right opacity-60 hover:opacity-100 transition-opacity flex-shrink-0">
+            <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">&copy; 2026 PT SMARTEK</p>
+            <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">SISTEM INOVASI</p>
+            <p class="text-[9px] text-slate-500 uppercase tracking-wider mt-0.5">DEV - WLDN</p>
+        </div>
+    </header>
+
+    <div class="bg-slate-800 p-5 rounded-xl border border-blue-500/50 shadow-lg shadow-blue-500/10 mb-4">
+        <div class="flex justify-between items-start mb-4">
+            <h2 class="text-sm font-black text-blue-400 uppercase tracking-wider">📋 Identity Setup</h2>
+            <button onclick="window.open('validator.html', 'OEE Validator', 'width=900,height=700')" class="flex items-center gap-1.5 text-[10px] bg-slate-700 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors font-bold uppercase tracking-wider">
+                <span class="material-symbols-outlined text-[14px]">calculate</span> Manual Validator
+            </button>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                <label class="block text-xs text-slate-400 mb-1">Machine Name</label>
+                <input type="text" id="set-machine-name" value="Nama_Mesin" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm font-bold">
+            </div>
+            <div class="bg-slate-900 p-3 rounded border border-slate-700">
+                <label class="block text-xs text-slate-400 mb-1">Operator Name</label>
+                <input type="text" id="set-operator-name" value="Nama_Operator" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm font-bold">
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-slate-800 p-5 rounded-xl border border-blue-500/50 shadow-lg shadow-blue-500/10">
+        <h2 class="text-sm font-black text-blue-400 mb-4 uppercase tracking-wider">⚙️ System Settings & Initialization</h2>
+        
+        <div class="grid grid-cols-5 gap-4 mb-4">
+            
+            <div class="col-span-3 bg-slate-900 p-3 rounded border border-slate-700">
+                <label class="block text-xs text-slate-400 mb-1">Select Shift</label>
+                <select id="set-shift" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm">
+                    <option value="1">Shift 1 (08:00 - 16:00)</option>
+                    <option value="2">Shift 2 (16:00 - 00:00)</option>
+                    <option value="3">Shift 3 (00:00 - 08:00)</option>
+                </select>
+            </div>
+            <div class="col-span-2 bg-slate-900 p-3 rounded border border-slate-700">
+                <label class="block text-xs text-slate-400 mb-1">OEE Thresholds (%)</label>
+                <div class="flex items-center gap-2 text-xs">
+                    <input type="number" id="set-oee-min" value="65" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-red-400 font-bold text-center" title="Critical Limit">
+                    <input type="number" id="set-oee-max" value="85" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-green-400 font-bold text-center" title="Target Limit">
+                </div>
+            </div>
+
+            <div class="col-span-3 bg-slate-900 p-3 rounded border border-slate-700">
+                <label class="block text-xs text-slate-400 mb-1">Not Operation Time (Break)</label>
+                <div class="flex items-center gap-2">
+                    <input type="time" id="set-break-start" value="12:00" class="flex-1 bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm text-center focus:outline-none focus:border-blue-500 transition-colors">
+                    <span class="text-slate-500 font-black">-</span>
+                    <input type="time" id="set-break-end" value="13:00" class="flex-1 bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm text-center focus:outline-none focus:border-blue-500 transition-colors">
+                </div>
+            </div>
+            <div class="col-span-2 bg-slate-900 p-3 rounded border border-slate-700">
+                <label class="block text-xs text-slate-400 mb-1">Ideal Cycle (Sec)</label>
+                <input type="number" id="set-cycle" value="10" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm font-mono text-center">
+            </div>
+
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded border border-slate-700 mb-5 flex justify-between items-center shadow-inner">
+            <div>
+                <label class="block text-sm font-bold text-slate-300 mb-0.5">Target Output (Auto)</label>
+                <p class="text-[10px] text-slate-500">Based on Net Operation Time & Cycle</p>
+            </div>
+            <div class="w-32">
+                <input type="number" id="set-target" value="2520" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-blue-400 text-xl font-black font-mono text-center" readonly>
+            </div>
+        </div>
+
+        <button onclick="applySettings()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold text-white shadow-lg shadow-blue-500/20 transition-colors">APPLY SETTINGS & RESET CLOCK</button>
+    </div>
+
+    <div class="bg-slate-800 p-5 rounded-xl border border-amber-500/50 shadow-lg shadow-amber-500/10 opacity-50 pointer-events-none transition-all mb-4" id="performance-panel">
+        <h2 class="text-sm font-black text-amber-400 mb-4 uppercase tracking-wider">⚡ Machine Speed Adjuster</h2>
+        <div class="mb-2">
+            <label class="block text-xs text-slate-400 mb-1">Actual Cycle Time: <span id="actual-cycle-val" class="text-white font-bold text-sm">10</span> Sec / part</label>
+            <input type="range" id="set-actual-cycle" min="1" max="20" value="10" class="w-full cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-500 mt-1 font-bold">
+                <span class="text-green-500">Fast (<span id="label-fast-val">1</span>s)</span>
+                <span>Target: <span id="target-cycle-label">10</span>s</span>
+                <span class="text-red-500">Slow (<span id="label-slow-val">20</span>s)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 opacity-50 pointer-events-none transition-all" id="controller-panel">
+        <h2 class="text-sm font-black text-slate-300 mb-4 uppercase tracking-wider">⏱️ Time-Lapse Controller</h2>
+        
+        <div class="mb-6 flex gap-3 items-end">
+            <div class="flex-1">
+                <label class="block text-xs text-slate-400 mb-1">Virtual Speed (<span id="speed-val" class="text-blue-400 font-bold">120x</span>)</label>
+                <input type="range" id="speed-slider" min="1" max="600" value="120" class="w-full">
+            </div>
+            <button id="btn-pause" onclick="togglePause()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded font-bold text-white shadow transition-colors text-xs h-8 mb-1">⏸ PAUSE</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-5">
+            <button onclick="changeState('RUNNING')" class="py-3 bg-green-600 hover:bg-green-500 rounded font-bold text-white shadow transition-colors">▶ START MACHINE</button>
+            <button onclick="changeState('IDLE')" class="py-3 bg-amber-600 hover:bg-amber-500 rounded font-bold text-white shadow transition-colors">⏸ STOP MACHINE</button>
+        </div>
+
+        <div class="mb-4 border-t border-slate-700 pt-4">
+            <label class="block text-xs text-slate-400 mb-2">Manual Quality Control (Simulate Reject)</label>
+            <button onclick="injectDefect()" class="w-full py-3 bg-red-900/50 hover:bg-red-600 border border-red-500 rounded font-bold text-white shadow transition-all">🩸 INJECT 1 REJECT (DEFECT)</button>
+        </div>
+
+        <div id="engine-alert" class="p-4 bg-slate-900 border-l-4 border-slate-500 rounded text-sm font-mono mt-4">
+            Engine Status: Waiting to apply settings...
+        </div>
+    </div>
+
+    <div class="mt-8 mb-4 text-center">
+        <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+            &copy; 2026 PT SMARTEK SISTEM INOVASI &bull; DEV - WLDN
+        </p>
+    </div>
+
+</div>
+
+<script>
+    const oeeChannel = new BroadcastChannel('oee_simulator_channel');
+    
+    let vClock, shiftEnd, breakStart, breakEnd;
+    let state = 'OFF';
+    let data = { target: 0, actual: 0, good: 0, reject: 0 };
+    let timelineHistory = [];
+    let currentBlockStart = 0;
+    
+    let isWaitingJudgement = false;
+    let breakHasTriggered = false; 
+    let isShiftEnded = false;
+    let isPaused = false; 
+    
+    let stopDurationSec = 0;
+    let totalRunningSec = 0; 
+    let totalBreakSecElapsed = 0; 
+    let partTimer = 0; 
+    
+    let pendingDowntimeReason = "Uncategorized";
+    let downtimeStartTimeStr = "";
+    let blockStartTimeStr = ""; 
+    
+    let baseDateStr = "2026-03-03T";
+
+    function autoCalculateTarget() {
+        let shiftStart, sEnd;
+        let shift = document.getElementById('set-shift').value;
+        if (shift === "1") { shiftStart = new Date(baseDateStr + "08:00:00"); sEnd = new Date(baseDateStr + "16:00:00"); } 
+        else if (shift === "2") { shiftStart = new Date(baseDateStr + "16:00:00"); sEnd = new Date("2026-03-04T00:00:00"); } 
+        else { shiftStart = new Date("2026-03-04T00:00:00"); sEnd = new Date("2026-03-04T08:00:00"); }
+
+        let bStart = new Date(baseDateStr + document.getElementById('set-break-start').value + ":00");
+        let bEnd = new Date(baseDateStr + document.getElementById('set-break-end').value + ":00");
+        if(bEnd <= bStart) bEnd.setDate(bEnd.getDate() + 1);
+
+        let totalShiftSec = (sEnd - shiftStart) / 1000;
+        let totalBreakSec = (bEnd - bStart) / 1000;
+        let netSec = totalShiftSec - totalBreakSec;
+
+        let cycleInput = parseFloat(document.getElementById('set-cycle').value);
+        let cycle = (isNaN(cycleInput) || cycleInput <= 0) ? 1 : cycleInput; 
+        
+        let target = Math.max(0, Math.round(netSec / cycle));
+        document.getElementById('set-target').value = target;
+    }
+
+    function updateDefaultBreakTimes() {
+        let shift = document.getElementById('set-shift').value;
+        let breakStart = document.getElementById('set-break-start');
+        let breakEnd = document.getElementById('set-break-end');
+
+        if (shift === "1") { breakStart.value = "12:00"; breakEnd.value = "13:00"; } 
+        else if (shift === "2") { breakStart.value = "18:00"; breakEnd.value = "19:00"; } 
+        else if (shift === "3") { breakStart.value = "04:00"; breakEnd.value = "05:00"; }
+        
+        autoCalculateTarget();
+    }
+
+    function lockControls() {
+        document.getElementById('controller-panel').classList.add('opacity-50', 'pointer-events-none');
+        document.getElementById('engine-alert').innerHTML = `<span class="text-amber-500 font-bold">Settings changed!</span> Please click APPLY SETTINGS first.`;
+    }
+
+    function togglePause() {
+        if (state === 'OFF' || isShiftEnded) return;
+        isPaused = !isPaused;
+        let btn = document.getElementById('btn-pause');
+        
+        if (isPaused) {
+            btn.innerHTML = '▶ RESUME';
+            btn.classList.remove('bg-purple-600', 'hover:bg-purple-500');
+            btn.classList.add('bg-purple-800', 'hover:bg-purple-700', 'animate-pulse', 'border', 'border-purple-400');
+            document.getElementById('engine-alert').innerHTML = `Engine Status: <span class="text-purple-400 font-bold">TIME-LAPSE PAUSED</span>`;
+        } else {
+            btn.innerHTML = '⏸ PAUSE';
+            btn.classList.remove('bg-purple-800', 'hover:bg-purple-700', 'animate-pulse', 'border', 'border-purple-400');
+            btn.classList.add('bg-purple-600', 'hover:bg-purple-500');
+            let color = state === 'RUNNING' ? 'text-green-400' : state === 'DOWN' ? 'text-red-400' : 'text-amber-400';
+            document.getElementById('engine-alert').innerHTML = `Engine Status: <span class="${color} font-bold">${state}</span>`;
+        }
+    }
+
+    document.getElementById('set-shift').addEventListener('change', () => { updateDefaultBreakTimes(); lockControls(); });
+    document.getElementById('set-break-start').addEventListener('input', () => { autoCalculateTarget(); lockControls(); });
+    document.getElementById('set-break-end').addEventListener('input', () => { autoCalculateTarget(); lockControls(); });
+    document.getElementById('set-cycle').addEventListener('input', () => { autoCalculateTarget(); lockControls(); });
+    document.getElementById('set-machine-name').addEventListener('input', lockControls);
+    document.getElementById('set-operator-name').addEventListener('input', lockControls);
+    
+    autoCalculateTarget();
+
+    document.getElementById('set-actual-cycle').addEventListener('input', function() {
+        document.getElementById('actual-cycle-val').innerText = this.value;
+    });
+    document.getElementById('speed-slider').addEventListener('input', function() { 
+        document.getElementById('speed-val').innerText = this.value + 'x'; 
+    });
+
+    function injectDefect() {
+        if (data.good > 0) {
+            data.good--;
+            data.reject++;
+            let elapsedShiftSec = (vClock.getTime() - (shiftEnd.getTime() - (8 * 3600 * 1000))) / 1000;
+            forceTickUpdate(elapsedShiftSec);
+        }
+    }
+
+    function applySettings() {
+        let machineName = document.getElementById('set-machine-name').value;
+        let operatorName = document.getElementById('set-operator-name').value;
+        let shift = document.getElementById('set-shift').value;
+        let bStartStr = document.getElementById('set-break-start').value;
+        let bEndStr = document.getElementById('set-break-end').value;
+        
+        data = { target: parseInt(document.getElementById('set-target').value), actual: 0, good: 0, reject: 0 };
+        timelineHistory = [];
+        state = 'OFF';
+        
+        isWaitingJudgement = false;
+        breakHasTriggered = false;
+        isShiftEnded = false;
+        isPaused = false;
+        stopDurationSec = 0;
+        totalRunningSec = 0;
+        totalBreakSecElapsed = 0;
+        partTimer = 0;
+        pendingDowntimeReason = "Uncategorized";
+
+        let breakBaseDate = baseDateStr;
+        if (shift === "1") { vClock = new Date(baseDateStr + "08:00:00"); shiftEnd = new Date(baseDateStr + "16:00:00"); } 
+        else if (shift === "2") { vClock = new Date(baseDateStr + "16:00:00"); shiftEnd = new Date("2026-03-04T00:00:00"); } 
+        else { vClock = new Date("2026-03-04T00:00:00"); shiftEnd = new Date("2026-03-04T08:00:00"); breakBaseDate = "2026-03-04T"; }
+
+        breakStart = new Date(breakBaseDate + bStartStr + ":00");
+        breakEnd = new Date(breakBaseDate + bEndStr + ":00");
+        if(breakEnd <= breakStart) breakEnd.setDate(breakEnd.getDate() + 1);
+
+        currentBlockStart = vClock.getTime();
+        blockStartTimeStr = vClock.toTimeString().split(' ')[0]; 
+
+        oeeChannel.postMessage({
+            type: 'INIT_SETTINGS',
+            machineName: machineName,
+            operatorName: operatorName,
+            target: data.target,
+            shiftStr: "Shift " + shift,
+            oeeMin: parseInt(document.getElementById('set-oee-min').value),
+            oeeMax: parseInt(document.getElementById('set-oee-max').value)
+        });
+
+        document.getElementById('controller-panel').classList.remove('opacity-50', 'pointer-events-none');
+        document.getElementById('performance-panel').classList.remove('opacity-50', 'pointer-events-none');
+        
+        let btn = document.getElementById('btn-pause');
+        btn.innerHTML = '⏸ PAUSE';
+        btn.className = "px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded font-bold text-white shadow transition-colors text-xs h-8 mb-1";
+        
+        // LOGIKA BARU: Dynamic Speed Adjuster Range (+/- 10 Sec)
+        let idealCycleInput = parseFloat(document.getElementById('set-cycle').value);
+        let idealCycle = (isNaN(idealCycleInput) || idealCycleInput <= 0) ? 1 : idealCycleInput;
+
+        let minSpeed, maxSpeed;
+        if (idealCycle < 10) {
+            minSpeed = 0.1;
+            maxSpeed = 20;
+        } else {
+            minSpeed = idealCycle - 10;
+            maxSpeed = idealCycle + 10;
+        }
+
+        // Terapkan ke elemen Slider
+        let speedSlider = document.getElementById('set-actual-cycle');
+        speedSlider.min = minSpeed;
+        speedSlider.max = maxSpeed;
+        speedSlider.value = idealCycle;
+
+        // Perbarui teks di layar
+        document.getElementById('target-cycle-label').innerText = idealCycle;
+        document.getElementById('actual-cycle-val').innerText = idealCycle;
+        document.getElementById('label-fast-val').innerText = minSpeed;
+        document.getElementById('label-slow-val').innerText = maxSpeed;
+
+        document.getElementById('engine-alert').innerHTML = `<span class="text-blue-400">Settings Applied!</span> Ready to Start.`;
+        
+        forceTickUpdate(0);
+    }
+
+    setInterval(() => {
+        if (state === 'OFF' || isShiftEnded || isPaused) return;
+
+        let speedMult = parseInt(document.getElementById('speed-slider').value);
+        let tickVirtualSec = speedMult / 10; 
+        
+        vClock.setTime(vClock.getTime() + (tickVirtualSec * 1000));
+
+        if (state === 'RUNNING') totalRunningSec += tickVirtualSec;
+        if (state === 'BREAK') totalBreakSecElapsed += tickVirtualSec;
+
+        let elapsedShiftSec = (vClock.getTime() - (shiftEnd.getTime() - (8 * 3600 * 1000))) / 1000;
+
+        if (vClock >= shiftEnd) {
+            isShiftEnded = true;
+            changeState('END_SHIFT');
+            forceTickUpdate(elapsedShiftSec); 
+            document.getElementById('engine-alert').innerHTML = `<span class="text-green-400 font-bold">END OF SHIFT REACHED!</span>`;
+            oeeChannel.postMessage({ type: 'SHIFT_ENDED' });
+            return;
+        }
+
+        if (vClock >= breakStart && vClock < breakEnd && !breakHasTriggered) {
+            breakHasTriggered = true;
+            changeState('BREAK');
+            document.getElementById('engine-alert').innerHTML = `<span class="text-amber-400">PLANNED STOP (BREAK TIME)</span>`;
+        }
+
+        if (state === 'RUNNING') {
+            let actualCycle = parseFloat(document.getElementById('set-actual-cycle').value);
+            partTimer += tickVirtualSec; 
+            if (partTimer >= actualCycle) {
+                let partsProduced = Math.floor(partTimer / actualCycle); 
+                data.actual += partsProduced;
+                data.good += partsProduced; 
+                partTimer = partTimer % actualCycle; 
+            }
+        }
+
+        if (state === 'IDLE' || state === 'DOWN') {
+            stopDurationSec += tickVirtualSec;
+            if (state === 'IDLE' && stopDurationSec >= 120) {
+                state = 'DOWN';
+                isWaitingJudgement = true;
+                downtimeStartTimeStr = vClock.toTimeString().split(' ')[0];
+                oeeChannel.postMessage({ type: 'STATUS', state: state });
+                oeeChannel.postMessage({ type: 'REQUIRE_JUDGEMENT' });
+                document.getElementById('engine-alert').innerHTML = `Engine Status: <span class="text-red-400 animate-pulse font-bold">DOWN!</span> Waiting Judgement...`;
+            }
+        }
+
+        forceTickUpdate(elapsedShiftSec);
+
+    }, 100);
+
+    function forceTickUpdate(elapsedShiftSec = 0) {
+        let tempHistory = [...timelineHistory];
+        if(state !== 'OFF' && state !== 'END_SHIFT') {
+            tempHistory.push({
+                state: state, 
+                durationSec: (vClock.getTime() - currentBlockStart) / 1000,
+                reason: state === 'DOWN' ? pendingDowntimeReason : '',
+                start: blockStartTimeStr,
+                end: vClock.toTimeString().split(' ')[0]
+            });
+        }
+
+        let plannedProductionSec = elapsedShiftSec - totalBreakSecElapsed;
+        let avail = plannedProductionSec > 0 ? Math.min(100, Math.round((totalRunningSec / plannedProductionSec) * 100)) : 0;
+        let qual = data.actual > 0 ? Math.round((data.good / data.actual) * 100) : 0;
+        let idealCycle = parseFloat(document.getElementById('set-cycle').value);
+        let perf = totalRunningSec > 0 ? Math.min(100, Math.round(((data.actual * idealCycle) / totalRunningSec) * 100)) : 0;
+        let totalOEE = Math.round((avail/100) * (perf/100) * (qual/100) * 100);
+
+        oeeChannel.postMessage({
+            type: 'TICK',
+            timeStr: vClock.toTimeString().split(' ')[0],
+            actual: data.actual, good: data.good, reject: data.reject,
+            oee: { avail: avail, perf: perf, qual: qual, total: totalOEE },
+            history: tempHistory,
+            metrics: { idealCycle: idealCycle }
+        });
+    }
+
+    function changeState(newState) {
+        if (isShiftEnded && newState !== 'END_SHIFT') return;
+        
+        if (newState === 'RUNNING' && isWaitingJudgement) {
+            document.getElementById('engine-alert').innerHTML = `<span class="text-red-500 font-bold animate-pulse">CANNOT START!</span> Select Judgement First!`;
+            return;
+        }
+        
+        if (state === newState) return;
+
+        let reasonToLog = pendingDowntimeReason;
+
+        if (state === 'DOWN' && (newState === 'RUNNING' || newState === 'END_SHIFT')) {
+            let minDur = (stopDurationSec / 60).toFixed(1); 
+            oeeChannel.postMessage({
+                type: 'LOG_EVENT',
+                time: downtimeStartTimeStr, 
+                duration: `${minDur} mins`, 
+                reason: reasonToLog
+            });
+            pendingDowntimeReason = "Uncategorized"; 
+        }
+
+        if (state !== 'OFF') {
+            timelineHistory.push({ 
+                state: state, 
+                durationSec: (vClock.getTime() - currentBlockStart) / 1000,
+                reason: state === 'DOWN' ? reasonToLog : '', 
+                start: blockStartTimeStr,
+                end: vClock.toTimeString().split(' ')[0]
+            });
+        }
+
+        state = newState;
+        currentBlockStart = vClock.getTime();
+        blockStartTimeStr = vClock.toTimeString().split(' ')[0]; 
+        
+        if (newState === 'RUNNING') {
+            stopDurationSec = 0;
+            isWaitingJudgement = false;
+        }
+        
+        if (newState !== 'END_SHIFT') {
+            oeeChannel.postMessage({ type: 'STATUS', state: state });
+            let color = state === 'RUNNING' ? 'text-green-400' : state === 'DOWN' ? 'text-red-400' : 'text-amber-400';
+            document.getElementById('engine-alert').innerHTML = `Engine Status: <span class="${color} font-bold">${state}</span>`;
+        }
+    }
+
+    oeeChannel.onmessage = function(event) {
+        if (event.data.type === 'JUDGEMENT_SUBMITTED') {
+            pendingDowntimeReason = event.data.reason; 
+            isWaitingJudgement = false; 
+            document.getElementById('engine-alert').innerHTML = `Reason <span class="text-white font-bold">"${event.data.reason}"</span> saved. Ready to START.`;
+        }
+    };
+</script>
+</body>
+</html>

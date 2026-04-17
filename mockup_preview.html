@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>OEE Dashboard (Time-Lapse Mode)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+</head>
+<body class="bg-slate-100 font-[Inter] text-slate-900">
+<div class="min-h-screen flex flex-col">
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50 relative">
+        <div class="flex items-center gap-4 relative z-10">
+            <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100">
+                <span class="material-symbols-outlined text-blue-600 text-3xl">precision_manufacturing</span>
+            </div>
+            <div>
+                <h1 id="display-machine-name" class="text-xl font-black text-slate-800">InjectionMolder_03</h1>
+                <div class="flex items-center gap-3 mt-1">
+                    <span id="status-badge" class="text-xs font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-600">WAITING SETUP...</span>
+                    <div class="h-3 w-px bg-slate-300"></div>
+                    <div class="flex items-center gap-1 text-slate-500" title="Current Operator">
+                        <span class="material-symbols-outlined text-[14px]">badge</span>
+                        <span id="display-operator-name" class="text-xs font-bold uppercase tracking-wide">Waiting...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 opacity-40">
+            <div class="border-y border-slate-200 py-1.5 px-6">
+                <span class="text-[10px] font-black tracking-[0.25em] text-slate-400 uppercase">
+                    Property of PT SMARTEK SISTEM INOVASI
+                </span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6 relative z-10">
+            <div class="text-right">
+                <div id="display-shift" class="text-[10px] font-bold text-slate-400 uppercase">Simulated Time</div>
+                <div id="virtual-clock" class="text-2xl font-mono font-black text-slate-400">00:00:00</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 p-6 grid grid-cols-12 gap-6 max-w-[1600px] mx-auto w-full relative z-10">
+        <div class="col-span-8 flex flex-col gap-6">
+            
+            <div class="bg-white rounded-xl border border-slate-200 p-6 flex gap-6 shadow-sm">
+                <div class="flex flex-col items-center justify-center w-1/3 border-r border-slate-100 pr-4">
+                    <h2 class="text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Overall OEE</h2>
+                    <div class="relative w-40 h-40">
+                        <svg class="w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" stroke-width="12"></circle>
+                            <circle id="oee-circle" cx="60" cy="60" r="50" fill="none" stroke="#22c55e" stroke-width="12" 
+                                    stroke-dasharray="314.159" stroke-dashoffset="314.159" stroke-linecap="round" 
+                                    class="transition-all duration-700 ease-in-out"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pt-1">
+                            <span id="oee-val-number" class="text-4xl font-black text-slate-300 leading-none">0</span>
+                            <span class="text-sm font-bold text-slate-400 leading-tight mt-1">%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-2/3 grid grid-cols-3 gap-4">
+                    <div class="relative flex flex-col justify-between overflow-hidden rounded-xl bg-slate-50 border border-slate-200 h-full">
+                        <div class="p-4 z-10 relative">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Availability</p>
+                            <p id="avail-val" class="text-3xl font-black text-slate-800">0<span class="text-base text-slate-400 font-bold">%</span></p>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-2/3 opacity-80 pointer-events-none">
+                            <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="w-full h-full">
+                                <defs><linearGradient id="grad-A" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
+                                <polygon id="spark-fill-A" fill="url(#grad-A)" points="0,40 100,40"></polygon>
+                                <polyline id="spark-line-A" fill="none" stroke="#3b82f6" stroke-width="2" vector-effect="non-scaling-stroke"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="relative flex flex-col justify-between overflow-hidden rounded-xl bg-slate-50 border border-slate-200 h-full">
+                        <div class="p-4 z-10 relative">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Performance</p>
+                            <p id="perf-val" class="text-3xl font-black text-slate-800">0<span class="text-base text-slate-400 font-bold">%</span></p>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-2/3 opacity-80 pointer-events-none">
+                            <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="w-full h-full">
+                                <defs><linearGradient id="grad-P" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.25"/><stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/></linearGradient></defs>
+                                <polygon id="spark-fill-P" fill="url(#grad-P)" points="0,40 100,40"></polygon>
+                                <polyline id="spark-line-P" fill="none" stroke="#8b5cf6" stroke-width="2" vector-effect="non-scaling-stroke"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="relative flex flex-col justify-between overflow-hidden rounded-xl bg-slate-50 border border-slate-200 h-full">
+                        <div class="p-4 z-10 relative">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Quality</p>
+                            <p id="qual-val" class="text-3xl font-black text-slate-800">0<span class="text-base text-slate-400 font-bold">%</span></p>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-2/3 opacity-80 pointer-events-none">
+                            <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="w-full h-full">
+                                <defs><linearGradient id="grad-Q" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/><stop offset="100%" stop-color="#10b981" stop-opacity="0"/></linearGradient></defs>
+                                <polygon id="spark-fill-Q" fill="url(#grad-Q)" points="0,40 100,40"></polygon>
+                                <polyline id="spark-line-Q" fill="none" stroke="#10b981" stroke-width="2" vector-effect="non-scaling-stroke"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm relative group cursor-pointer transition-shadow hover:shadow-md hover:border-blue-300" onclick="openGanttModal()">
+                <div class="absolute inset-0 bg-blue-50/0 group-hover:bg-blue-50/30 rounded-xl transition-colors pointer-events-none z-10"></div>
+                
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2"><span class="material-symbols-outlined text-sm">timeline</span> Gantt Chart (8h Shift)</h2>
+                    <span class="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">open_in_full</span> CLICK TO EXPAND & VIEW SUMMARY</span>
+                </div>
+
+                <div class="flex gap-4 mb-2">
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-green-500"></span><span class="text-[10px] text-slate-500">Run</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-amber-400"></span><span class="text-[10px] text-slate-500">Idle / Minor Stop</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-slate-400"></span><span class="text-[10px] text-slate-500">Break / Planned</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-red-500"></span><span class="text-[10px] text-slate-500">Down > 2m</span></div>
+                </div>
+                <div id="timeline-container" class="relative h-12 w-full bg-slate-100 rounded-lg flex overflow-hidden border border-slate-200 z-0"></div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 p-6 flex-1 shadow-sm">
+                <h2 class="text-sm font-bold text-slate-800 mb-4">Event Logs (Downtime > 2 mins)</h2>
+                <div class="h-40 overflow-y-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 sticky top-0"><tr class="text-xs text-slate-500 uppercase"><th class="p-2">Time</th><th class="p-2">Duration</th><th class="p-2">Event Reason</th></tr></thead>
+                        <tbody id="log-table" class="font-medium"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-4 flex flex-col gap-6">
+            <div class="bg-white rounded-xl border border-slate-200 p-6 grid grid-cols-2 gap-4 shadow-sm">
+                <div class="col-span-2 flex justify-between items-end border-b pb-2 mb-2">
+                    <span class="font-bold text-slate-800">Production</span>
+                    <span class="text-xs font-bold text-slate-400">Target: <span id="target-val" class="text-slate-700 text-lg">0</span></span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg"><p class="text-[10px] font-bold text-slate-400 uppercase">Actual</p><p id="actual-val" class="text-3xl font-black">0</p></div>
+                <div class="bg-green-50 p-4 rounded-lg border border-green-100"><p class="text-[10px] font-bold text-green-600 uppercase">Good</p><p id="good-val" class="text-3xl font-black text-green-700">0</p></div>
+                <div class="bg-red-50 p-4 rounded-lg border border-red-100 col-span-2"><p class="text-[10px] font-bold text-red-600 uppercase">Defects</p><p id="reject-val" class="text-3xl font-black text-red-700">0</p></div>
+            </div>
+
+            <div id="operator-action-box" class="bg-slate-100 rounded-xl border border-slate-300 p-6 opacity-50 pointer-events-none transition-all duration-300 shadow-sm">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="material-symbols-outlined text-amber-500 text-3xl">warning</span>
+                    <div>
+                        <h3 class="font-black text-red-600 uppercase">Input Required!</h3>
+                        <p class="text-xs text-slate-600 font-medium">Machine stopped for > 2 mins.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="submitReason('Breakdown')" class="py-3 px-4 bg-white border border-slate-300 hover:border-red-500 hover:text-red-600 rounded-lg font-bold text-sm text-left shadow-sm">🔧 Breakdown</button>
+                    <button onclick="submitReason('Changeover')" class="py-3 px-4 bg-white border border-slate-300 hover:border-amber-500 hover:text-amber-600 rounded-lg font-bold text-sm text-left shadow-sm">🔄 Changeover</button>
+                    <button onclick="submitReason('Material Shortage')" class="py-3 px-4 bg-white border border-slate-300 hover:border-blue-500 hover:text-blue-600 rounded-lg font-bold text-sm text-left shadow-sm">📦 Material Shortage</button>
+                </div>
+            </div>
+            
+            <div id="end-shift-alert" class="hidden bg-blue-50 border border-blue-200 px-4 py-4 rounded-xl flex-col gap-3 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-blue-600 text-2xl">flag</span>
+                    <div class="flex-1">
+                        <p class="font-bold text-blue-900 leading-tight">Shift Completed!</p>
+                        <p class="text-xs text-blue-700">Data frozen. Ready for analysis.</p>
+                    </div>
+                </div>
+                <button onclick="openWaterfallModal()" class="w-full mt-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow flex justify-center items-center gap-2 transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">waterfall_chart</span> VIEW OEE WATERFALL ANALYSIS
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full py-4 mt-auto border-t border-slate-200 bg-slate-50 text-center relative z-10">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            &copy; 2026 PT SMARTEK SISTEM INOVASI &bull; DEV - WLDN
+        </p>
+    </footer>
+
+</div> <div id="gantt-modal" class="fixed inset-0 bg-slate-900/60 z-[100] hidden flex-col items-center justify-center p-6 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl flex flex-col max-h-[90vh] overflow-hidden transform transition-all border border-slate-200">
+        
+        <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+            <div>
+                <h2 class="font-black text-lg text-slate-800 flex items-center gap-2"><span class="material-symbols-outlined text-blue-600">query_stats</span> Detailed Timeline Analysis</h2>
+                <p class="text-xs text-slate-500 mt-1">Gantt Chart overview and detailed chronological breakdown.</p>
+            </div>
+            <button onclick="closeGanttModal()" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto flex-1 bg-white">
+            <div class="grid grid-cols-4 gap-4 mb-6" id="modal-summary-grid"></div>
+
+            <div class="mb-8">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="font-bold text-sm text-slate-700 uppercase">Visual Timeline</span>
+                </div>
+                <div id="modal-timeline-container" class="relative h-20 w-full bg-slate-100 rounded-xl flex overflow-hidden border border-slate-300 shadow-inner"></div>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-sm text-slate-700 mb-3 border-b pb-2 uppercase">Event Breakdown (Stops & Breaks)</h3>
+                <div id="modal-event-list" class="flex flex-col gap-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="waterfall-modal" class="fixed inset-0 bg-slate-900/60 z-[110] hidden flex-col items-center justify-center p-6 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden transform transition-all border border-slate-200">
+        
+        <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+            <div>
+                <h2 class="font-black text-lg text-slate-800 flex items-center gap-2"><span class="material-symbols-outlined text-blue-600">waterfall_chart</span> OEE Time Cascade (Waterfall)</h2>
+                <p class="text-xs text-slate-500 mt-1">Analysis of time losses from total shift duration.</p>
+            </div>
+            <button onclick="closeWaterfallModal()" class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
+        <div class="p-8 pb-12 bg-slate-50 flex flex-col gap-2 overflow-visible" id="waterfall-container">
+            </div>
+    </div>
+</div>
+
+<script>
+    const oeeChannel = new BroadcastChannel('oee_simulator_channel');
+    
+    let oeeMinThresh = 65, oeeMaxThresh = 85;
+    let totalShiftSeconds = 8 * 3600;
+    let histA = [], histP = [], histQ = [];
+    
+    let isGanttModalOpen = false;
+    let currentHistoryData = [];
+    let latestData = null;
+
+    function openGanttModal() {
+        isGanttModalOpen = true;
+        document.getElementById('gantt-modal').classList.remove('hidden');
+        document.getElementById('gantt-modal').classList.add('flex');
+        renderGanttModalContent();
+    }
+    function closeGanttModal() {
+        isGanttModalOpen = false;
+        document.getElementById('gantt-modal').classList.add('hidden');
+        document.getElementById('gantt-modal').classList.remove('flex');
+    }
+
+    function openWaterfallModal() {
+        document.getElementById('waterfall-modal').classList.remove('hidden');
+        document.getElementById('waterfall-modal').classList.add('flex');
+        renderWaterfallChart();
+    }
+    function closeWaterfallModal() {
+        document.getElementById('waterfall-modal').classList.add('hidden');
+        document.getElementById('waterfall-modal').classList.remove('flex');
+    }
+
+    // PERBAIKAN: Menambahkan presisi Detik (Seconds)
+    function formatTime(seconds) {
+        let sec = Math.round(seconds);
+        let h = Math.floor(sec / 3600);
+        let m = Math.floor((sec % 3600) / 60);
+        let s = sec % 60;
+        
+        if (h > 0) return `${h}h ${m}m ${s}s`;
+        return `${m}m ${s}s`;
+    }
+
+    function drawSparkline(lineId, fillId, dataArray) {
+        if (dataArray.length === 0) return;
+        const width = 100, height = 40, pad = 2; 
+        let step = width / Math.max(1, dataArray.length - 1);
+        let points = [], fillPoints = `0,${height} `;
+        for(let i = 0; i < dataArray.length; i++) {
+            let x = i * step;
+            let val = Math.max(0, Math.min(100, dataArray[i]));
+            let y = height - pad - (val / 100) * (height - 2 * pad);
+            points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+            fillPoints += `${x.toFixed(1)},${y.toFixed(1)} `;
+        }
+        fillPoints += `${width},${height}`;
+        document.getElementById(lineId).setAttribute('points', points.join(' '));
+        document.getElementById(fillId).setAttribute('points', fillPoints);
+    }
+
+    oeeChannel.onmessage = function(event) {
+        const d = event.data;
+
+        if (d.type === 'INIT_SETTINGS') {
+            document.getElementById('target-val').innerText = d.target;
+            document.getElementById('display-shift').innerText = d.shiftStr;
+            document.getElementById('display-machine-name').innerText = d.machineName;
+            document.getElementById('display-operator-name').innerText = d.operatorName;
+            document.getElementById('virtual-clock').classList.remove('text-slate-400');
+            document.getElementById('virtual-clock').classList.add('text-blue-600');
+            
+            oeeMinThresh = d.oeeMin; oeeMaxThresh = d.oeeMax;
+            histA = []; histP = []; histQ = []; currentHistoryData = []; latestData = null;
+            
+            document.getElementById('status-badge').innerText = 'READY';
+            document.getElementById('timeline-container').innerHTML = '';
+            document.getElementById('log-table').innerHTML = '';
+            document.getElementById('end-shift-alert').classList.add('hidden');
+            
+            let opBox = document.getElementById('operator-action-box');
+            opBox.classList.add('opacity-50', 'pointer-events-none', 'bg-slate-100');
+            opBox.classList.remove('bg-amber-100', 'border-amber-400', 'animate-pulse');
+            closeWaterfallModal();
+        }
+        else if (d.type === 'TICK') {
+            latestData = d;
+            
+            document.getElementById('virtual-clock').innerText = d.timeStr;
+            document.getElementById('actual-val').innerText = d.actual;
+            document.getElementById('good-val').innerText = d.good;
+            document.getElementById('reject-val').innerText = d.reject;
+            
+            document.getElementById('avail-val').innerHTML = `${d.oee.avail}<span class="text-base text-slate-400 font-bold">%</span>`;
+            document.getElementById('perf-val').innerHTML = `${d.oee.perf}<span class="text-base text-slate-400 font-bold">%</span>`;
+            document.getElementById('qual-val').innerHTML = `${d.oee.qual}<span class="text-base text-slate-400 font-bold">%</span>`;
+            
+            histA.push(d.oee.avail); histP.push(d.oee.perf); histQ.push(d.oee.qual);
+            drawSparkline('spark-line-A', 'spark-fill-A', histA);
+            drawSparkline('spark-line-P', 'spark-fill-P', histP);
+            drawSparkline('spark-line-Q', 'spark-fill-Q', histQ);
+            
+            let oeeScore = d.oee.total;
+            let radius = 50, circumference = 2 * Math.PI * radius;
+            let targetOffset = circumference - (oeeScore / 100) * circumference;
+            
+            let elCircle = document.getElementById('oee-circle');
+            let elNum = document.getElementById('oee-val-number');
+            elCircle.style.strokeDashoffset = targetOffset;
+            elNum.innerText = oeeScore;
+            
+            if (oeeScore < oeeMinThresh) { elCircle.setAttribute('stroke', '#ef4444'); elNum.className = 'text-4xl font-black text-red-500 leading-none transition-colors'; } 
+            else if (oeeScore >= oeeMaxThresh) { elCircle.setAttribute('stroke', '#22c55e'); elNum.className = 'text-4xl font-black text-green-500 leading-none transition-colors'; } 
+            else { elCircle.setAttribute('stroke', '#f59e0b'); elNum.className = 'text-4xl font-black text-amber-500 leading-none transition-colors'; }
+
+            currentHistoryData = d.history;
+            renderGanttBars('timeline-container', currentHistoryData);
+            
+            if (isGanttModalOpen) renderGanttModalContent();
+        }
+        else if (d.type === 'STATUS') {
+            let elStatus = document.getElementById('status-badge');
+            elStatus.innerText = d.state;
+            if(d.state === 'RUNNING') elStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-green-500 text-white shadow-sm";
+            else if(d.state === 'BREAK') elStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-slate-500 text-white shadow-sm";
+            else if(d.state === 'IDLE') elStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-amber-500 text-white shadow-sm";
+            else elStatus.className = "text-xs font-bold px-2 py-0.5 rounded bg-red-600 text-white animate-pulse shadow-sm";
+        }
+        else if (d.type === 'REQUIRE_JUDGEMENT') {
+            let opBox = document.getElementById('operator-action-box');
+            opBox.classList.remove('opacity-50', 'pointer-events-none', 'bg-slate-100');
+            opBox.classList.add('bg-amber-100', 'border-amber-400', 'animate-pulse');
+        }
+        else if (d.type === 'LOG_EVENT') {
+            const row = `<tr class="border-b hover:bg-slate-100 transition-colors"><td class="p-2 font-mono text-slate-500">${d.time}</td><td class="p-2 font-bold text-red-600">${d.duration}</td><td class="p-2 font-bold">${d.reason}</td></tr>`;
+            document.getElementById('log-table').insertAdjacentHTML('afterbegin', row);
+        }
+        else if (d.type === 'SHIFT_ENDED') {
+            document.getElementById('status-badge').className = "text-xs font-bold px-2 py-0.5 rounded bg-blue-600 text-white shadow-sm";
+            document.getElementById('status-badge').innerText = "SHIFT ENDED";
+            document.getElementById('end-shift-alert').classList.remove('hidden');
+        }
+    };
+
+    function renderGanttBars(containerId, history) {
+        let el = document.getElementById(containerId);
+        el.innerHTML = '';
+        history.forEach(block => {
+            let widthPct = (block.durationSec / totalShiftSeconds) * 100;
+            let color = 'bg-slate-200';
+            if(block.state === 'RUNNING') color = 'bg-green-500';
+            if(block.state === 'IDLE') color = 'bg-amber-400';
+            if(block.state === 'BREAK') color = 'bg-slate-400';
+            if(block.state === 'DOWN') color = 'bg-red-500';
+
+            let minutes = (block.durationSec / 60).toFixed(1);
+            let tooltip = `${block.state} \n${block.start || '--:--'} to ${block.end || '--:--'} (${minutes} Mins)`;
+            if(block.state === 'DOWN' && block.reason && block.reason !== 'Uncategorized') tooltip += ` \nReason: ${block.reason}`;
+
+            el.innerHTML += `<div class="h-full ${color} border-r border-white/20 hover:opacity-80 transition-opacity cursor-help" style="width: ${widthPct}%" title="${tooltip}"></div>`;
+        });
+    }
+
+    function renderGanttModalContent() {
+        renderGanttBars('modal-timeline-container', currentHistoryData);
+
+        let runSec = 0, idleSec = 0, breakSec = 0, downSec = 0;
+        let reasonsObj = {};
+
+        currentHistoryData.forEach(b => {
+            if(b.state === 'RUNNING') runSec += b.durationSec;
+            else if(b.state === 'IDLE') idleSec += b.durationSec;
+            else if(b.state === 'BREAK') breakSec += b.durationSec;
+            else if(b.state === 'DOWN') {
+                downSec += b.durationSec;
+                let r = b.reason || "Uncategorized";
+                reasonsObj[r] = (reasonsObj[r] || 0) + b.durationSec;
+            }
+        });
+
+        let downDetailStr = "";
+        for (const [key, val] of Object.entries(reasonsObj)) {
+            downDetailStr += `<div class="flex justify-between text-[10px]"><span class="truncate pr-2">${key}</span> <span class="font-bold">${formatTime(val)}</span></div>`;
+        }
+        if (downDetailStr === "") downDetailStr = `<div class="text-[10px] opacity-50">No major downtime</div>`;
+
+        let summaryHtml = `
+            <div class="bg-green-50 border border-green-200 rounded-xl p-3"><p class="text-[10px] font-bold text-green-600 uppercase">Total Running</p><p class="text-xl font-black text-green-800">${formatTime(runSec)}</p></div>
+            <div class="bg-slate-100 border border-slate-300 rounded-xl p-3"><p class="text-[10px] font-bold text-slate-500 uppercase">Total Break / Planned</p><p class="text-xl font-black text-slate-700">${formatTime(breakSec)}</p></div>
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><p class="text-[10px] font-bold text-amber-600 uppercase">Total Idle / Minor Stop</p><p class="text-xl font-black text-amber-800">${formatTime(idleSec)}</p></div>
+            <div class="bg-red-50 border border-red-200 rounded-xl p-3 flex flex-col justify-between">
+                <div><p class="text-[10px] font-bold text-red-600 uppercase">Total Down (> 2m)</p><p class="text-xl font-black text-red-800">${formatTime(downSec)}</p></div>
+                <div class="mt-2 pt-2 border-t border-red-200 text-red-800">${downDetailStr}</div>
+            </div>
+        `;
+        document.getElementById('modal-summary-grid').innerHTML = summaryHtml;
+
+        let listEl = document.getElementById('modal-event-list');
+        listEl.innerHTML = '';
+        let stops = currentHistoryData.filter(b => b.state !== 'RUNNING');
+        if(stops.length === 0) {
+            listEl.innerHTML = '<div class="p-4 text-center bg-slate-50 rounded-lg border border-slate-200 text-slate-400 text-sm">No machine stops or breaks recorded yet.</div>';
+            return;
+        }
+
+        stops.reverse().forEach(block => {
+            let colorClass = block.state === 'IDLE' ? 'text-amber-600 bg-amber-50 border-amber-200' : 
+                             block.state === 'BREAK' ? 'text-slate-600 bg-slate-50 border-slate-300' : 'text-red-600 bg-red-50 border-red-200';
+            let icon = block.state === 'IDLE' ? 'pause_circle' : block.state === 'BREAK' ? 'coffee' : 'error';
+            let minutes = (block.durationSec / 60).toFixed(1);
+            
+            let reasonBadge = '';
+            if (block.state === 'DOWN') {
+                let rText = block.reason || "Uncategorized";
+                reasonBadge = `<div class="mt-1.5"><span class="px-2 py-0.5 bg-red-200 border border-red-300 text-red-800 text-[10px] font-black rounded shadow-sm inline-block uppercase tracking-wide">REASON: ${rText}</span></div>`;
+            }
+
+            listEl.innerHTML += `
+            <div class="flex items-start gap-4 p-4 rounded-xl border ${colorClass}">
+                <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 mt-1"><span class="material-symbols-outlined">${icon}</span></div>
+                <div class="flex-1">
+                    <div class="mb-1">
+                        <h4 class="font-black text-sm uppercase leading-none">${block.state}</h4>
+                        ${reasonBadge}
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs opacity-80 font-mono mt-2"><span class="material-symbols-outlined text-[12px]">schedule</span><span>${block.start || '--:--:--'}</span><span class="mx-1">➔</span><span>${block.end || '--:--:--'}</span></div>
+                </div>
+                <div class="text-right flex flex-col items-end"><span class="font-black text-xl leading-none">${minutes}</span><span class="text-[10px] uppercase font-bold opacity-70">Mins</span></div>
+            </div>`;
+        });
+    }
+
+    function renderWaterfallChart() {
+        if (!latestData) return;
+        
+        let container = document.getElementById('waterfall-container');
+        let d = latestData;
+        let idealCycle = d.metrics ? d.metrics.idealCycle : 10; 
+
+        let workingSec = totalShiftSeconds; 
+        let plannedStopSec = 0;
+        let downTimeLossSec = 0;
+        let operationSec = 0;
+        
+        currentHistoryData.forEach(b => {
+            if(b.state === 'BREAK') plannedStopSec += b.durationSec;
+            else if(b.state === 'IDLE' || b.state === 'DOWN') downTimeLossSec += b.durationSec;
+            else if(b.state === 'RUNNING') operationSec += b.durationSec;
+        });
+        
+        let loadingSec = workingSec - plannedStopSec;
+        let netOperationSec = d.actual * idealCycle; 
+        let speedLossSec = Math.max(0, operationSec - netOperationSec); 
+        netOperationSec = operationSec - speedLossSec; 
+        
+        let valuableOperationSec = d.good * idealCycle;
+        let qualityLossSec = Math.max(0, netOperationSec - valuableOperationSec);
+        valuableOperationSec = netOperationSec - qualityLossSec; 
+
+        function createEducativeBar(title1, desc1, val1Sec, color1, title2, val2Sec, color2, showDropLine = false, styleType = 'none', lossImpactBadge = null) {
+            let pct1 = (val1Sec / workingSec) * 100;
+            let pct2 = val2Sec !== null ? (val2Sec / workingSec) * 100 : 0;
+            
+            let lineHtml = showDropLine ? `<div class="absolute w-0.5 bg-red-500 z-20" style="height: 18px; left: ${pct1}%; top: 100%; transform: translateX(-50%);"></div>` : '';
+
+            let label2Html = '';
+            if (val2Sec !== null) {
+                if (styleType === 'time-inside') {
+                    label2Html = `
+                    <div style="width: ${pct2}%" class="${color2} h-full flex items-center justify-center px-1 border-l border-white/20 relative rounded-r">
+                        <span class="text-[11px] font-bold ${pct2 > 2 ? '' : 'hidden'} whitespace-nowrap">${formatTime(val2Sec)}</span>
+                        <div class="absolute left-full ml-3 flex flex-col justify-center whitespace-nowrap">
+                            <span class="text-[12px] text-slate-600 font-bold">${title2}</span>
+                            <span class="text-[9px] text-slate-400">Istirahat terjadwal (Tidak memotong OEE)</span>
+                        </div>
+                    </div>`;
+                } else if (styleType === 'all-outside') {
+                    let badgeHtml = lossImpactBadge ? `<span class="bg-red-50 border border-red-200 text-red-600 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider font-black shadow-sm ml-2">📉 Mengurangi ${lossImpactBadge}</span>` : '';
+                    label2Html = `
+                    <div style="width: ${pct2}%" class="${color2} h-full border-l border-white/20 relative rounded-r">
+                        <div class="absolute left-full ml-3 h-full flex flex-col justify-center whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="text-red-600 font-black text-[12px]">${title2}</span>
+                                <span class="text-slate-500 font-bold text-[12px] ml-2">${formatTime(val2Sec)}</span>
+                                ${badgeHtml}
+                            </div>
+                        </div>
+                    </div>`;
+                }
+            }
+
+            return `
+            <div class="w-full mb-5 pr-[340px]"> 
+                <div class="relative w-full"> 
+                    ${lineHtml}
+                    <div class="flex w-full h-11 shadow-sm text-white relative rounded">
+                        <div style="width: ${pct1}%" class="${color1} h-full flex items-center justify-between px-3 ${val2Sec !== null ? 'rounded-l' : 'rounded'} transition-all">
+                            <div class="flex flex-col justify-center overflow-hidden pr-2">
+                                <span class="truncate font-bold text-[12px] leading-tight">${title1}</span>
+                                <span class="truncate text-[9px] font-normal text-white/80 leading-tight">${desc1}</span>
+                            </div>
+                            <span class="whitespace-nowrap font-bold text-[12px]">${formatTime(val1Sec)}</span>
+                        </div>
+                        ${label2Html}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        let wfHtml = "";
+        wfHtml += createEducativeBar("Working Time (Total Shift)", "Total jadwal kerja operator (Misal: 8 Jam)", workingSec, "bg-blue-700", null, null, "", false, 'none');
+        wfHtml += createEducativeBar("Loading Time", "Waktu bersih mesin wajib memproduksi barang", loadingSec, "bg-blue-600", "Permissible Stop", plannedStopSec, "bg-slate-400 text-slate-100", true, 'time-inside');
+        wfHtml += createEducativeBar("Operation Time", "Waktu mesin benar-benar menyala (Run)", operationSec, "bg-blue-500", "Down Time Loss", downTimeLossSec, "bg-red-600", true, 'all-outside', 'Availability');
+        wfHtml += createEducativeBar("Net Operation Time", "Waktu setara untuk part yg tercetak", netOperationSec, "bg-blue-400", "Speed Loss", speedLossSec, "bg-red-500", true, 'all-outside', 'Performance');
+        wfHtml += createEducativeBar("Valuable Operation Time", "Waktu setara untuk part BAGUS (Good) saja", valuableOperationSec, "bg-green-500", "Quality Loss", qualityLossSec, "bg-red-400", false, 'all-outside', 'Quality');
+
+        container.innerHTML = wfHtml;
+    }
+
+    function submitReason(reason) {
+        oeeChannel.postMessage({ type: 'JUDGEMENT_SUBMITTED', reason: reason });
+        let opBox = document.getElementById('operator-action-box');
+        opBox.classList.add('opacity-50', 'pointer-events-none', 'bg-slate-100');
+        opBox.classList.remove('bg-amber-100', 'border-amber-400', 'animate-pulse');
+        document.getElementById('status-badge').className = "text-xs font-bold px-2 py-0.5 rounded bg-red-600 text-white shadow-sm";
+        document.getElementById('status-badge').innerText = "DOWN (WAITING START)";
+    }
+</script>
+</body>
+</html>
