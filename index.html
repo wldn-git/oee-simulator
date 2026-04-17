@@ -14,45 +14,65 @@
 </head>
 <body class="overflow-hidden bg-slate-900 flex h-screen w-screen m-0 p-0 font-[Inter]">
 
-    <div id="sidebar" class="h-full w-[500px] bg-slate-900 flex flex-col transition-all duration-300 ease-in-out shrink-0 border-r border-slate-700 relative z-20">
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-[100] w-full md:w-[450px] bg-slate-900 flex flex-col transform transition-transform duration-300 ease-in-out border-r border-slate-700 lg:relative lg:translate-x-0">
         <div class="flex justify-between items-center px-6 py-4 bg-slate-900 border-b border-slate-800 shadow-sm">
             <span class="text-white font-black flex items-center gap-2 tracking-wide">
                 <span class="material-symbols-outlined text-blue-500">settings_suggest</span> CONTROL PANEL
             </span>
-            <button onclick="toggleSidebar()" class="w-8 h-8 flex items-center justify-center rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-red-500 transition-colors" title="Close Panel">
-                <span class="material-symbols-outlined text-[18px]">close</span>
+            <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-red-500 transition-colors" title="Close Panel">
+                <span class="material-symbols-outlined">close</span>
             </button>
         </div>
         <iframe src="simulator.html" class="w-full flex-1 border-none bg-slate-900"></iframe>
     </div>
 
-    <div id="main-content" class="flex-1 h-full bg-slate-100 relative z-10 shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.3)]">
+    <!-- Overlay for mobile when sidebar is open -->
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden backdrop-blur-sm"></div>
+
+    <div id="main-content" class="flex-1 h-full bg-slate-100 relative z-10 overflow-hidden">
         
-        <button id="toggle-btn" onclick="toggleSidebar()" class="absolute top-2/3 -translate-y-1/2 left-0 z-50 bg-slate-800 text-white pl-2 pr-4 py-3 rounded-r-xl shadow-[5px_0_15px_rgba(0,0,0,0.3)] hover:bg-blue-600 transition-colors hidden flex items-center gap-2 border border-slate-700 border-l-0 group">
-            <span class="material-symbols-outlined text-[24px] group-hover:translate-x-1 transition-transform">keyboard_double_arrow_right</span>
-            <span class="text-[11px] font-bold tracking-wider uppercase">Open Engine</span>
+        <button id="toggle-btn" onclick="toggleSidebar()" class="fixed bottom-6 right-6 z-[80] bg-blue-600 text-white pl-4 pr-5 py-3.5 rounded-full shadow-2xl hover:bg-blue-700 transition-all flex items-center gap-2 group transform active:scale-95">
+            <span class="material-symbols-outlined text-[24px]">settings</span>
+            <span class="text-sm font-bold tracking-wider uppercase">Open Engine</span>
         </button>
 
         <iframe src="mockup_preview.html" class="w-full h-full border-none"></iframe>
     </div>
 
     <script>
-        let isOpen = true;
-        function toggleSidebar() {
-            isOpen = !isOpen;
+        let isOpen = window.innerWidth >= 1024; // Default open on Desktop
+        
+        function updateUI() {
             const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
             const btn = document.getElementById('toggle-btn');
             
             if(isOpen) {
-                sidebar.classList.remove('-ml-[500px]');
-                btn.classList.add('hidden');
+                sidebar.style.transform = 'translateX(0)';
+                if(window.innerWidth < 1024) overlay.classList.remove('hidden');
+                btn.classList.add('scale-0', 'opacity-0');
             } else {
-                sidebar.classList.add('-ml-[500px]');
-                setTimeout(() => {
-                    btn.classList.remove('hidden');
-                }, 300); 
+                sidebar.style.transform = 'translateX(-100%)';
+                overlay.classList.add('hidden');
+                btn.classList.remove('scale-0', 'opacity-0');
             }
         }
+
+        function toggleSidebar() {
+            isOpen = !isOpen;
+            updateUI();
+        }
+
+        // Initialize state
+        updateUI();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if(window.innerWidth >= 1024) {
+                isOpen = true;
+            }
+            updateUI();
+        });
     </script>
 </body>
 </html>

@@ -53,9 +53,9 @@
     <div class="bg-slate-800 p-5 rounded-xl border border-blue-500/50 shadow-lg shadow-blue-500/10">
         <h2 class="text-sm font-black text-blue-400 mb-4 uppercase tracking-wider">⚙️ System Settings & Initialization</h2>
         
-        <div class="grid grid-cols-5 gap-4 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 md:gap-4 mb-4">
             
-            <div class="col-span-3 bg-slate-900 p-3 rounded border border-slate-700">
+            <div class="sm:col-span-3 bg-slate-900 p-3 rounded border border-slate-700">
                 <label class="block text-xs text-slate-400 mb-1">Select Shift</label>
                 <select id="set-shift" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm">
                     <option value="1">Shift 1 (08:00 - 16:00)</option>
@@ -63,7 +63,7 @@
                     <option value="3">Shift 3 (00:00 - 08:00)</option>
                 </select>
             </div>
-            <div class="col-span-2 bg-slate-900 p-3 rounded border border-slate-700">
+            <div class="sm:col-span-2 bg-slate-900 p-3 rounded border border-slate-700">
                 <label class="block text-xs text-slate-400 mb-1">OEE Thresholds (%)</label>
                 <div class="flex items-center gap-2 text-xs">
                     <input type="number" id="set-oee-min" value="65" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-red-400 font-bold text-center" title="Critical Limit">
@@ -71,15 +71,15 @@
                 </div>
             </div>
 
-            <div class="col-span-3 bg-slate-900 p-3 rounded border border-slate-700">
+            <div class="sm:col-span-3 bg-slate-900 p-3 rounded border border-slate-700">
                 <label class="block text-xs text-slate-400 mb-1">Not Operation Time (Break)</label>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <input type="time" id="set-break-start" value="12:00" class="flex-1 bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm text-center focus:outline-none focus:border-blue-500 transition-colors">
-                    <span class="text-slate-500 font-black">-</span>
+                    <span class="hidden sm:inline text-slate-500 font-black">-</span>
                     <input type="time" id="set-break-end" value="13:00" class="flex-1 bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm text-center focus:outline-none focus:border-blue-500 transition-colors">
                 </div>
             </div>
-            <div class="col-span-2 bg-slate-900 p-3 rounded border border-slate-700">
+            <div class="sm:col-span-2 bg-slate-900 p-3 rounded border border-slate-700">
                 <label class="block text-xs text-slate-400 mb-1">Ideal Cycle (Sec)</label>
                 <input type="number" id="set-cycle" value="10" class="w-full bg-slate-800 border border-slate-600 rounded p-1.5 text-white text-sm font-mono text-center">
             </div>
