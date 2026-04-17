@@ -1,6 +1,6 @@
 # OEE Simulator PRO + Calc
 
-![OEE Simulator](https://raw.githubusercontent.com/your-username/oee-simulator/main/screenshot.png) <!-- Nanti bisa ganti path ini -->
+![OEE Simulator](screenshot.png)
 
 A professional Overall Equipment Effectiveness (OEE) Simulator and Dashboard built with Electron and Web Technologies.
 
