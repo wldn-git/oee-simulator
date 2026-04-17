@@ -14,12 +14,12 @@
 </head>
 <body class="overflow-hidden bg-slate-900 flex h-screen w-screen m-0 p-0 font-[Inter]">
 
-    <div id="sidebar" class="fixed inset-y-0 left-0 z-[100] w-full md:w-[450px] bg-slate-900 flex flex-col transform transition-transform duration-300 ease-in-out border-r border-slate-700 lg:relative lg:translate-x-0">
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-[100] w-full md:w-[450px] bg-slate-900 flex flex-col transform transition-transform duration-300 ease-in-out border-r border-slate-700 lg:fixed lg:translate-x-0">
         <div class="flex justify-between items-center px-6 py-4 bg-slate-900 border-b border-slate-800 shadow-sm">
             <span class="text-white font-black flex items-center gap-2 tracking-wide">
                 <span class="material-symbols-outlined text-blue-500">settings_suggest</span> CONTROL PANEL
             </span>
-            <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-red-500 transition-colors" title="Close Panel">
+            <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-red-500 transition-colors" title="Close Panel">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -27,11 +27,11 @@
     </div>
 
     <!-- Overlay for mobile when sidebar is open -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden backdrop-blur-sm"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden backdrop-blur-sm"></div>
 
-    <div id="main-content" class="flex-1 h-full bg-slate-100 relative z-10 overflow-hidden">
+    <div id="main-content" class="flex-1 h-full bg-slate-100 relative z-10 overflow-hidden transition-all duration-300 lg:pl-[450px]" id="main-container">
         
-        <button id="toggle-btn" onclick="toggleSidebar()" class="fixed bottom-6 right-6 z-[80] bg-blue-600 text-white pl-4 pr-5 py-3.5 rounded-full shadow-2xl hover:bg-blue-700 transition-all flex items-center gap-2 group transform active:scale-95">
+        <button id="toggle-btn" onclick="toggleSidebar()" class="fixed bottom-6 right-6 z-[80] bg-blue-600 text-white pl-4 pr-5 py-3.5 rounded-full shadow-2xl hover:bg-blue-700 transition-all flex items-center gap-2 group transform active:scale-95 scale-0 opacity-0">
             <span class="material-symbols-outlined text-[24px]">settings</span>
             <span class="text-sm font-bold tracking-wider uppercase">Open Engine</span>
         </button>
@@ -40,20 +40,27 @@
     </div>
 
     <script>
-        let isOpen = window.innerWidth >= 1024; // Default open on Desktop
+        let isOpen = true; // Default start open
         
         function updateUI() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
             const btn = document.getElementById('toggle-btn');
+            const mainContent = document.getElementById('main-content');
             
             if(isOpen) {
                 sidebar.style.transform = 'translateX(0)';
-                if(window.innerWidth < 1024) overlay.classList.remove('hidden');
+                if(window.innerWidth < 1024) {
+                    overlay.classList.remove('hidden');
+                    mainContent.style.paddingLeft = '0';
+                } else {
+                    mainContent.style.paddingLeft = '450px';
+                }
                 btn.classList.add('scale-0', 'opacity-0');
             } else {
                 sidebar.style.transform = 'translateX(-100%)';
                 overlay.classList.add('hidden');
+                mainContent.style.paddingLeft = '0';
                 btn.classList.remove('scale-0', 'opacity-0');
             }
         }
@@ -63,16 +70,10 @@
             updateUI();
         }
 
-        // Initialize state
+        // Initialize
         updateUI();
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if(window.innerWidth >= 1024) {
-                isOpen = true;
-            }
-            updateUI();
-        });
+        window.addEventListener('resize', updateUI);
     </script>
 </body>
 </html>
