@@ -14,7 +14,7 @@
     "electron-builder": "^24.9.1"
   },
   "build": {
-    "appId": "com.smartek.oeesimulator",
+    "appId": "com.wldnsoft.oeesimulator",
     "productName": "OEE Simulator PRO + Calc",
     "compression": "maximum",
     "files": [

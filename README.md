@@ -27,5 +27,5 @@ This project is also web-ready. Simply push to GitHub and connect to Vercel.
 The `index.html` serves as the main entry point for the web version.
 
 ## Developed By
-- **PT SMARTEK SISTEM INOVASI**
+- **WLDN-SOFT INDUSTRIAL SYSTEMS**
 - Developer: **WLDN** (2026)

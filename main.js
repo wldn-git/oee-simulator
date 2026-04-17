@@ -4,7 +4,7 @@ function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 1366,
         height: 768,
-        title: "OEE Simulator PRO - SMARTEK",
+        title: "OEE Simulator PRO - WLDN-Soft",
         autoHideMenuBar: true, 
         webPreferences: {
             nodeIntegration: true,
