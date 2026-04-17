@@ -2,5 +2,8 @@
   "name": "oee-simulator-pro",
   "version": 2,
   "cleanUrls": true,
-  "framework": null
+  "framework": null,
+  "installCommand": "npm install --include=dev",
+  "buildCommand": "echo 'Static Deployment'",
+  "outputDirectory": "./"
 }
