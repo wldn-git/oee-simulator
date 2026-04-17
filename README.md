@@ -12,6 +12,15 @@ A professional Overall Equipment Effectiveness (OEE) Simulator and Dashboard bui
 - **OEE Waterfall Analysis**: Visual breakdown of time losses.
 - **Manual Validator**: Educational tool for TPM formula verification.
 
+## Preview Gallery
+| Detailed Timeline (Gantt) | OEE Waterfall Analysis |
+|---|---|
+| ![Gantt Chart](v_gantt.png) | ![Waterfall](v_waterfall.png) |
+
+| Manual Validator & Education Mode |
+|---|
+| ![Validator](v_validator.png) |
+
 ## How to Run (Local Desktop)
 1. Install dependencies:
    ```bash
